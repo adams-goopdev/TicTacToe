@@ -66,15 +66,16 @@ public class Board {
     {
         Paint paint = new Paint();
         paint.setColor(Color.LTGRAY);
-        paint.setStyle(Paint.Style.FILL_AND_STROKE);
+        paint.setStyle(Paint.Style.STROKE);
+        paint.setStrokeWidth(10);
 
         for(int row = 0; row < cellValues[0].length; row ++)
         {
             for(int col = 0; col < cellValues[1].length; col ++)
             {
-                //Draw a black or white rectangle
+
                 if((row + col) % 2 == 0)
-                    paint.setColor(Color.LTGRAY);
+                    paint.setColor(Color.DKGRAY);
                 else
                     paint.setColor(Color.DKGRAY);
 
@@ -92,48 +93,35 @@ public class Board {
                 drawTurn(canvas, cells[row][col],Color.BLUE);
 
             }
-
         }
-
-        //This is to show the line in TicTac Toe
-/*        paint.setColor(Color.YELLOW);
-        paint.setStrokeWidth(10);
-        canvas.drawLine(50, 50, 350, 350, paint);*/
     }
 
-    private void drawTurn(Canvas canvas, Rect rect, int color /*Do not use this, we need a circle or x*/)
+    private void drawTurn(Canvas canvas, Rect rect, int color)
     {
         if(color == Color.RED)
         {
             Paint paint = new Paint();
             paint.setColor(color);
-            //This will need to be changed to not fill in the circle
+
             paint.setStyle(Paint.Style.STROKE);
             paint.setStrokeWidth(10);
 
             int x = rect.centerX();
             int y = rect.centerY();
 
-            canvas.drawCircle(x, y, SIZE * .35f, paint);
+            canvas.drawCircle(x, y, SIZE * .45f, paint);
         }
         else
         {
+            //Draw the X
             Paint paint = new Paint();
             paint.setColor(color);
-            //This will need to be changed to not fill in the circle
             paint.setStyle(Paint.Style.STROKE);
             paint.setStrokeWidth(10);
 
-            int x = rect.centerX();
-            int y = rect.centerY();
-
-
-            int topRight;
-            int topLeft;
-            int bottomLeft;
-            int bottomRight;
-
-            canvas.drawCircle(x, y, SIZE * .35f, paint);
+            //Draw two lines that intersect within the rectangle
+            canvas.drawLine(rect.left, rect.bottom, rect.right, rect.top, paint);
+            canvas.drawLine(rect.right, rect.bottom, rect.left, rect.top, paint);
 
         }
 
