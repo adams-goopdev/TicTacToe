@@ -13,12 +13,14 @@ import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import org.w3c.dom.Text;
 
 import java.util.Arrays;
+import java.util.Random;
 
 public class Game extends AppCompatActivity {
 
@@ -29,6 +31,8 @@ public class Game extends AppCompatActivity {
     String value;
     String[][] cellValues = new String[Board.BOARDSIZE][Board.BOARDSIZE];
 
+
+    Boolean isComputer = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -83,40 +87,60 @@ public class Game extends AppCompatActivity {
                 pt.x = (int)motionEvent.getX();
                 pt.y = (int)motionEvent.getY();
 
-                if(board.hitTest(pt, turn, this.getContext()) != "-1")
+                if(board.hitTest(pt, turn) != "-1")
                 {
-                    turn = (turn == "1") ? "2" : "1";
-                    Log.d(TAG, "onTouch: " + Arrays.deepToString(cellValues));
+                    //turn = (turn == "1") ? "2" : "1";
+                    turn = "1";
+
                 }
                 else
                 {
                     return false;
                 }
 
-                if (turn == "2")
-                {
-                    for(int row = 0; row < cellValues[0].length; row ++)
-                        for(int col = 0; col < cellValues[1].length; col ++)
-                            if(cellValues[row][col]=="")
-                                if(board.cells[row][col].contains(pt.x, pt.y))
-                                {
-                                    Log.d(TAG, "hitTest: Hit");
-                                    cellValues[row][col] = turn;
-                                }
-                }
+                board.computerTurn();
+
                 invalidate();
+                Log.d(TAG, "onTouch: "+ Arrays.deepToString(cellValues));
             }
+
             return true;
         }
 
         @Override
         protected void onDraw(Canvas canvas)
         {
-            canvas.drawColor(Color.LTGRAY);
+
             board.Draw(canvas);
             checkVictory();
-            Log.d(TAG, "onDraw: Test onDraw");
+            checkDraw();
+            Log.d(TAG, "onDraw: Test onDraw" + Arrays.deepToString(cellValues));
         }
+
+    }
+
+
+
+
+
+
+    private boolean checkDraw() {
+
+        for(int row = 0; row < cellValues[0].length; row ++)
+            for(int col = 0; col < cellValues[1].length; col ++)
+                if(cellValues[row][col]=="")
+                {
+                    return false;
+                }
+
+        String message = "ITS A DRAW!";
+        showMessage(message);
+
+        initialSetup();
+        board.cellValues = cellValues;
+        setContentView(new DrawView(this));
+
+        return true;
 
     }
 
@@ -126,8 +150,8 @@ public class Game extends AppCompatActivity {
         String[] values = {"1", "2"};
         for(String value : values)
         {
-            if(cellValues[0][0].equals(value) && cellValues[0][1].equals(value) && cellValues[0][2].equals(value) //Top row
-            ||cellValues[1][0].equals(value) && cellValues[1][1].equals(value) && cellValues[1][2].equals(value) //Middle row
+                    if(cellValues[0][0].equals(value) && cellValues[0][1].equals(value) && cellValues[0][2].equals(value) //Top row
+                    ||cellValues[1][0].equals(value) && cellValues[1][1].equals(value) && cellValues[1][2].equals(value) //Middle row
                     ||cellValues[2][0].equals(value) && cellValues[2][1].equals(value) && cellValues[2][2].equals(value) //bottom row
                     ||cellValues[0][0].equals(value) && cellValues[1][0].equals(value) && cellValues[2][0].equals(value) //1st col
                     ||cellValues[0][1].equals(value) && cellValues[1][1].equals(value) && cellValues[2][1].equals(value) //2nd col
@@ -137,11 +161,6 @@ public class Game extends AppCompatActivity {
 
             {
                 Log.d(TAG, "Victory!: " + value);
-
-                LayoutInflater inflater = (LayoutInflater)getSystemService(LAYOUT_INFLATER_SERVICE);
-                View popupView = inflater.inflate(R.layout.activity_main, null);
-                TextView tvWinner = findViewById(R.id.winner);
-
 
                 String message = "";
 
@@ -159,7 +178,7 @@ public class Game extends AppCompatActivity {
                 return value;
             }
         }
-        Log.d(TAG, "checkVictory: " + Arrays.deepToString(cellValues));
+        //Log.d(TAG, "checkVictory: " + Arrays.deepToString(cellValues));
 
 
         return value;
