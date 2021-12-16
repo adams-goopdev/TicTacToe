@@ -138,8 +138,6 @@ public class Board {
 
         try
         {
-            Random random = new Random();
-
 
             while(true){
                 compMove++;

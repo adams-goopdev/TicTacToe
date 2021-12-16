@@ -31,8 +31,7 @@ public class Game extends AppCompatActivity {
     String value;
     String[][] cellValues = new String[Board.BOARDSIZE][Board.BOARDSIZE];
 
-
-    Boolean isComputer = true;
+    Boolean isGameOver = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,7 +55,9 @@ public class Game extends AppCompatActivity {
             {
                     cellValues[row][col] = "";
             }
+
         }
+
     }
 
     private void getScreenDims(){
@@ -92,13 +93,30 @@ public class Game extends AppCompatActivity {
                     //turn = (turn == "1") ? "2" : "1";
                     turn = "1";
 
+                    checkVictory();
+                    checkDraw();
+
+                    if(isGameOver == false)
+                    {
+                        board.computerTurn();
+                    }
+                    else {
+                        for (int row = 0; row < cellValues[0].length; row++) {
+                            for (int col = 0; col < cellValues[1].length; col++) {
+                                cellValues[row][col] = "";
+
+                                isGameOver = false;
+                            }
+                        }
+                    }
+
+
                 }
                 else
                 {
                     return false;
                 }
 
-                board.computerTurn();
 
                 invalidate();
                 Log.d(TAG, "onTouch: "+ Arrays.deepToString(cellValues));
@@ -113,7 +131,8 @@ public class Game extends AppCompatActivity {
 
             board.Draw(canvas);
             checkVictory();
-            checkDraw();
+            //checkDraw();
+
             Log.d(TAG, "onDraw: Test onDraw" + Arrays.deepToString(cellValues));
         }
 
@@ -135,8 +154,7 @@ public class Game extends AppCompatActivity {
 
         String message = "ITS A DRAW!";
         showMessage(message);
-
-        initialSetup();
+        isGameOver = true;
         board.cellValues = cellValues;
         setContentView(new DrawView(this));
 
@@ -145,7 +163,7 @@ public class Game extends AppCompatActivity {
     }
 
 
-    public String checkVictory()
+    public Boolean checkVictory()
     {
         String[] values = {"1", "2"};
         for(String value : values)
@@ -171,17 +189,17 @@ public class Game extends AppCompatActivity {
 
                 showMessage(message);
 
-                initialSetup();
+                isGameOver = true;
                 board.cellValues = cellValues;
                 setContentView(new DrawView(this));
-
-                return value;
+                initialSetup();
+                return true;
             }
         }
         //Log.d(TAG, "checkVictory: " + Arrays.deepToString(cellValues));
 
 
-        return value;
+        return false;
     }
 
     private void showMessage(String msg)
